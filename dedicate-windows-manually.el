@@ -62,6 +62,8 @@
 
 ;;; Code:
 
+(require 'cl-macs)
+
 (defcustom dedicated-window-lighter-string " [D]"
   "A string, propertized with `dedicated-window-lighter-face', prepended
 to the mode line of manually dedicated windows.")
@@ -72,8 +74,8 @@ in this list will not be undedicated by `undedicate-window'.")
 
 (defun dedicate-window-was-by-hand-p (window)
   (let ((result nil))
-    (loop for w in dedicated-windows-by-hand
-          collect (if (eq w window) (setq result t)))
+    (cl-loop for w in dedicated-windows-by-hand
+             collect (if (eq w window) (setq result t)))
     result))
 
 (defun dedicate-window (&optional window flag)
