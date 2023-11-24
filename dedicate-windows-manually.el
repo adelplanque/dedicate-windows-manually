@@ -64,25 +64,35 @@
 
 (require 'cl-macs)
 
-(defcustom dedicated-window-lighter-string " [D]"
-  "A string, propertized with `dedicated-window-lighter-face', prepended
-to the mode line of manually dedicated windows.")
+(defgroup dedicate-windows nil
+  "Options for `dedicate-windows-manually'."
+  :group 'convenience
+  :prefix "decidate-windows-")
 
-(defvar dedicated-windows-by-hand nil
-  "A list of windows known to have been manually dedicated. Windows not
-in this list will not be undedicated by `undedicate-window'.")
+(defcustom dedicate-windows-lighter-string " [D]"
+  "String prepended to the mode line.
+This string, propertized with `dedicate-windows-lighter-face', is
+prepended to the mode line when the window is manually dedicated."
+  :type 'string
+  :group 'dedicated-window)
+
+(defvar dedicate-windows-by-hand nil
+  "List of windows known to have been manually dedicated.
+Windows not in this list will not be undedicated by
+`undedicate-window'.")
 
 (defun dedicate-window-was-by-hand-p (window)
   (let ((result nil))
-    (cl-loop for w in dedicated-windows-by-hand
+    (cl-loop for w in dedicate-windows-by-hand
              collect (if (eq w window) (setq result t)))
     result))
 
-(defun dedicate-window (&optional window flag)
+(defun dedicate-windows-dedicate (&optional window flag)
   "Dedicate a window to its buffer, and prevent it from being split.
 
-Optional argument WINDOW, if non-nil, should specify a window. Otherwise,
-or when called interactively, the currently selected window is used.
+Optional argument WINDOW, if non-nil, should specify a window.
+Otherwise, or when called interactively, the currently selected
+window is used.
 
 Optional argument FLAG, if non-nil, will be passed verbatim to
 `set-window-dedicated-p'."
@@ -92,21 +102,21 @@ Optional argument FLAG, if non-nil, will be passed verbatim to
   (if (window-dedicated-p window)
       (message "Window is already dedicated.")
     (progn
-      (add-to-list 'dedicated-windows-by-hand window)
+      (add-to-list 'dedicate-windows-by-hand window)
       (setq mode-line-format
-            (append `(,dedicated-window-lighter-string) mode-line-format))
+            (append `(,dedicate-windows-lighter-string) mode-line-format))
       (setq window-size-fixed t)
       (set-window-dedicated-p window flag))))
 
-(defun undedicate-window (&optional window)
+(defun dedicate-windows-undedicate (&optional window)
   "Un-dedicate a window from its buffer.
 
 Optional argument WINDOW, if non-nil, should specify a window listed in
-`dedicated-windows-by-hand'. Otherwise, or when called interactively,
+`dedicated-windows-by-hand'.  Otherwise, or when called interactively,
 the currently selected window is used.
 
-If WINDOW is not in `dedicated-windows-by-hand', a complaint will be
-issued and nothing will be done."
+If WINDOW is not in `dedicated-windows-by-hand', a complaint will
+be issued and nothing will be done."
   (interactive nil)
   (if (eq nil window) (setq window (selected-window)))
   (if (not (window-dedicated-p window))
@@ -114,23 +124,23 @@ issued and nothing will be done."
     (if (not (dedicate-window-was-by-hand-p window))
         (message "Window is not dedicated by hand.")
       (progn
-        (setq dedicated-windows-by-hand
-              (remove window dedicated-windows-by-hand))
+        (setq dedicate-windows-by-hand
+              (remove window dedicate-windows-by-hand))
         (setq mode-line-format
-              (remove dedicated-window-lighter-string mode-line-format))
+              (remove dedicate-windows-lighter-string mode-line-format))
         (setq window-size-fixed nil)
         (set-window-dedicated-p window nil)))))
 
-(defun dedicate-window-toggle (&optional window)
+(defun dedicate-windows-toggle (&optional window)
   "Toggle a window's manual buffer dedication state.
 
-Optional argument WINDOW, if non-nil, should specify a window. Otherwise,
+Optional argument WINDOW, if non-nil, should specify a window.  Otherwise,
 or when called interactively, the value of `selected-window' is used."
   (interactive nil)
   (if (eq nil window) (setq window (selected-window)))
   (if (window-dedicated-p window)
-      (undedicate-window window)
-    (dedicate-window window)))
+      (dedicate-windows-undedicate window)
+    (dedicate-windows-dedicate window)))
 
 (provide 'dedicate-windows-manually)
 
