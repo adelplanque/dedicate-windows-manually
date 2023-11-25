@@ -39,21 +39,26 @@
 
 ;; (require 'dedicate-windows-manually)
 
-;; Now you can use M-x dedicate-window to dedicate the selected window
-;; to its currently displayed buffer, M-x undedicate-window to release
-;; a dedication so applied, and M-x dedicate-window-toggle to switch
-;; between the states.
+;; Now you can use:
+;; * M-x dedicate-windows-dedicate to dedicate the selected window to
+;;   its currently displayed buffer,
+;; * M-x dedicate-windows-undedicate to release a dedication so
+;;   applied,
+;; * M-x dedicate-windows-toggle to switch between the states.
+;; * M-x dedicate-windows-undedicate-all to release all dedication
+;;   applied,
 
 ;; These functions will operate only on manually dedicated or
-;; undedicated windows; that is, M-x dedicate-window will not dedicate
-;; a window which is already dedicated (i.e. "(window-dedicated-p
-;; window) -> t", and M-x undedicate-window will not undedicate a
-;; window which was not dedicated by way of M-x dedicate-window.
+;; undedicated windows; that is,`dedicate-windows-dedicate' will not
+;; dedicate a window which is already dedicated
+;; (i.e. "(window-dedicated-p window) -> t", and
+;; `dedicate-windows-undedicate' will not undedicate a window which
+;; was not dedicated by way of `dedicate-windows-dedicate'.
 
-;; If you find yourself frequently doing M-x dedicate-window-toggle,
+;; If you find yourself frequently doing M-x dedicate-windows-toggle,
 ;; you might wish to place something like this in your init file:
 
-;; (global-set-key (kbd "C-x 4 C-d") 'dedicate-window-toggle)
+;; (global-set-key (kbd "C-x 4 C-d") 'dedicate-windows-toggle)
 
 ;; Bugs:
 ;; * Changing the lighter string while you have windows dedicated is
@@ -130,6 +135,12 @@ be issued and nothing will be done."
               (remove dedicate-windows-lighter-string mode-line-format))
         (setq window-size-fixed nil)
         (set-window-dedicated-p window nil)))))
+
+(defun dedicate-windows-undedicate-all ()
+  "Un-dedicate all manually dedicated windows."
+  (interactive)
+  (while dedicate-windows-by-hand
+    (dedicate-windows-undedicate (car dedicate-windows-by-hand))))
 
 (defun dedicate-windows-toggle (&optional window)
   "Toggle a window's manual buffer dedication state.
