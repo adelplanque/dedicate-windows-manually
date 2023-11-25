@@ -49,7 +49,7 @@
 ;;   applied,
 
 ;; These functions will operate only on manually dedicated or
-;; undedicated windows; that is,`dedicate-windows-dedicate' will not
+;; undedicated windows; that is, `dedicate-windows-dedicate' will not
 ;; dedicate a window which is already dedicated
 ;; (i.e. "(window-dedicated-p window) -> t", and
 ;; `dedicate-windows-undedicate' will not undedicate a window which
@@ -59,6 +59,7 @@
 ;; you might wish to place something like this in your init file:
 
 ;; (global-set-key (kbd "C-x 4 C-d") 'dedicate-windows-toggle)
+;; (global-set-key (kbd "C-x 4 C-a") 'dedicate-windows-undedicate-all)
 
 ;; Bugs:
 ;; * Changing the lighter string while you have windows dedicated is
